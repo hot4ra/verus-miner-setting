@@ -1,1 +1,3 @@
-cd ccminer && thmod -x start.sh && ./start.sh
+#!/bin/bash
+cd $HOME/ccminer || exit 1
+./start.sh
