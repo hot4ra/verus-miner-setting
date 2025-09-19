@@ -91,9 +91,9 @@ elif [ "$CHOICE" == "3" ]; then
         cd ..
     fi
 
-    # 檢查 ccminer 目錄是否存在，如果不存在則自動跳到選項2
+    # 檢查 ccminer 目錄是否存在，如果不存在則提示用戶執行選項2安裝
     if [ ! -d "ccminer" ]; then
-        echo "ccminer 目錄不存在，將自動執行選項 2 進行安裝..."
+        echo "ccminer 目錄不存在，請執行選項 2 進行安裝..."
         sleep 3
         CHOICE="2"
         continue
