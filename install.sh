@@ -2,13 +2,6 @@
 
 # =================================================================
 # Verus Coin 自動挖礦安裝與啟動腳本
-# -----------------------------------------------------------------
-# 這個腳本將自動完成所有繁瑣的設定步驟：
-# 1. 更新並升級 Termux 套件。
-# 2. 安裝所有必要的編譯工具和函式庫。
-# 3. 從 GitHub 克隆並編譯 ccminer。
-# 4. 根據使用者輸入的錢包地址，生成 start.sh 腳本。
-# 5. 自動啟動挖礦。
 # =================================================================
 
 # --- 步驟 1: 歡迎與初始檢查 ---
@@ -61,6 +54,7 @@ fi
 
 # 生成 start.sh 腳本
 echo "--- 正在建立 start.sh 腳本..."
+# 使用 cat << EOF 語法，將 $WALLET_ADDRESS 變數的值直接寫入檔案
 cat > start.sh << EOF
 #!/bin/bash
 
@@ -71,8 +65,8 @@ LOG_FILE="./mining.log"
 while true
 do
   echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - 正在啟動 ccminer ---" | tee -a "\$LOG_FILE"
-  # 使用使用者輸入的錢包地址
-  ./ccminer -a verus -o stratum+tcp://verus.farm:9999 -u \$WALLET_ADDRESS -p x -t 8 2>&1 | tee -a "\$LOG_FILE"
+  # 將使用者輸入的錢包地址直接寫入指令
+  ./ccminer -a verus -o stratum+tcp://verus.farm:9999 -u ${WALLET_ADDRESS} -p x -t 8 2>&1 | tee -a "\$LOG_FILE"
   echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - ccminer 已停止，5秒後將重新啟動 ---" | tee -a "\$LOG_FILE"
   sleep 5
 done
