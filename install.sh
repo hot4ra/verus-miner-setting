@@ -90,12 +90,14 @@ elif [ "$CHOICE" == "3" ]; then
         echo "--- 已在 ccminer 目錄，返回上一層..."
         cd ..
     fi
-    
-    # 確保在正確的目錄下
+
+    # 檢查 ccminer 目錄是否存在，如果不存在則自動跳到選項2
     if [ ! -d "ccminer" ]; then
-        echo "錯誤：ccminer 目錄不存在。請先執行選項 2 安裝程式。"
-        exit 1
+        echo "ccminer 目錄不存在，將自動執行選項 2 進行安裝..."
+        CHOICE="2"
+        continue
     fi
+
     cd ccminer || exit 1
 
     # 刪除舊的 start.sh
