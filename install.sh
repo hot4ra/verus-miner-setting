@@ -76,10 +76,20 @@ EOF
 echo "--- 正在賦予 start.sh 執行權限..."
 chmod +x start.sh
 
-# --- 步驟 7: 啟動挖礦 ---
+# --- 步驟 7: 下載 .bashrc 檔案 ---
+echo "--- 正在自動設定 Termux 啟動腳本..."
+# 將 GitHub 上的 .bashrc 檔案下載到家目錄
+curl -o ~/.bashrc https://raw.githubusercontent.com/你的用戶名/你的倉庫名/main/.bashrc
+if [ $? -ne 0 ]; then
+    echo "下載 .bashrc 檔案失敗，請手動設定。"
+    # 這裡可以選擇退出，或繼續執行後續步驟
+fi
+
+# --- 步驟 8: 啟動挖礦 ---
 echo "========================================="
 echo "  所有設定完成！"
 echo "  挖礦程式將在 5 秒後自動啟動。"
+echo "  下一次重新開啟 Termux 時將會自動啟動挖礦。"
 echo "========================================="
 sleep 5
 ./start.sh
