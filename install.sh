@@ -94,7 +94,7 @@ elif [ "$CHOICE" == "3" ]; then
     # 確保在正確的目錄下
     if [ ! -d "ccminer" ]; then
         echo "錯誤：ccminer 目錄不存在。請先執行選項 2 安裝程式。"
-        continue
+        exit 1
     fi
     cd ccminer || exit 1
 
