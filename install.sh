@@ -81,6 +81,12 @@ elif [ "$CHOICE" == "3" ]; then
     
     echo "--- 正在生成挖礦腳本... ---"
     
+    # 判斷是否已在 ccminer 目錄下，若是則返回上一層
+    if [[ "$(basename "$PWD")" == "ccminer" ]]; then
+        echo "--- 已在 ccminer 目錄，返回上一層..."
+        cd ..
+    fi
+    
     # 確保在正確的目錄下
     if [ ! -d "ccminer" ]; then
         echo "錯誤：ccminer 目錄不存在。請先執行選項 2 安裝程式。"
