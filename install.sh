@@ -45,6 +45,7 @@ elif [ "$CHOICE" == "2" ]; then
     
     # 安裝與升級套件
     apt-get update -y
+    export DEBIAN_FRONTEND=noninteractive
     apt-get upgrade -y
     
     # 安裝依賴套件
