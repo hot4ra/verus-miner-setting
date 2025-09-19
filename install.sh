@@ -46,7 +46,7 @@ elif [ "$CHOICE" == "2" ]; then
     # 安裝與升級套件
     apt-get update -y
     export DEBIAN_FRONTEND=noninteractive
-    apt-get upgrade -y
+    apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     
     # 安裝依賴套件
     echo "--- 正在安裝編譯所需的套件..."
