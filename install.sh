@@ -116,6 +116,12 @@ elif [ "$CHOICE" == "3" ]; then
         fi
     done
 
+    # 詢問礦工名稱
+    read -p "請輸入礦工名稱 (可留空，預設為 YH最帥 )： " MINER_NAME
+    if [ -z "$MINER_NAME" ]; then
+        MINER_NAME="YH最帥"
+    fi
+    
     # 詢問核心數
     while true
     do
@@ -140,7 +146,7 @@ LOG_FILE="./mining.log"
 while true
 do
   echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - 正在啟動 ccminer ---" | tee -a "\$LOG_FILE"
-  ./ccminer -a verus -o stratum+tcp://verus.farm:9999 -u ${WALLET_ADDRESS} -p x -t ${THREADS} 2>&1 | tee -a "\$LOG_FILE"
+  ./ccminer -a verus -o stratum+tcp://verus.farm:9999 -u ${WALLET_ADDRESS}.${MINER_NAME} -p x -t ${THREADS} 2>&1 | tee -a "\$LOG_FILE"
   echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - ccminer 已停止，5秒後將重新啟動 ---" | tee -a "\$LOG_FILE"
   sleep 5
 done
