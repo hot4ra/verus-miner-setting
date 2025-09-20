@@ -134,6 +134,19 @@ elif [ "$CHOICE" == "3" ]; then
         fi
     done
 
+    # 顯示用戶輸入的摘要
+    echo "========================================="
+    echo "  您的設定摘要："
+    echo "  錢包地址: $WALLET_ADDRESS"
+    echo "  礦工名稱: $MINER_NAME"
+    echo "  核心數: $THREADS"
+    echo "========================================="
+    read -p "確認以上資訊是否正確？ (y/n)： " CONFIRMATION
+    if [ "$CONFIRMATION" != "y" ] && [ "$CONFIRMATION" != "Y" ]; then
+        echo "取消操作，回到主選單..."
+        continue
+    fi    
+
     # 生成 start.sh 腳本
     echo "--- 正在建立 start.sh 腳本..."
     cat > start.sh << EOF
