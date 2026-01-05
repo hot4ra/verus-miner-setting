@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =================================================================
-# Verus Coin & Scash 自動化設定腳本 (增量開發版)
+# Verus Coin & Scash 自動化設定腳本 (增量開發 - 自動化安裝版)
 # =================================================================
 
 while true
@@ -37,14 +37,19 @@ if [ "$CHOICE" == "1" ]; then
     echo "  設定完成！"
     echo "========================================="
 
-# [既有邏輯] 選項 2: Verus 完整安裝
+# [既有邏輯 - 已加入自動化參數] 選項 2: Verus 完整安裝
 elif [ "$CHOICE" == "2" ]; then
     echo "--- 正在執行完整安裝流程... ---"
-    apt-get update -y
+    
+    # 設定環境變數為非互動模式，並強制套用舊設定檔 (選 N)
     export DEBIAN_FRONTEND=noninteractive
+    apt-get update -y
     apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+    
     echo "--- 正在安裝編譯所需的套件..."
-    apt install -y git wget proot build-essential cmake libmicrohttpd libuv libuuid boost libjansson
+    # 加入 -y 確保套件安裝自動同意
+    apt install -y git wget proot build-essential cmake libmicrohttpd libuv libuuid boost libjansson -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+    
     if [ $? -ne 0 ]; then
         echo "套件安裝失敗，請檢查網路連線或儲存空間。"
         exit 1
@@ -137,23 +142,30 @@ EOF
     sleep 5
     ./start.sh
 
-# [新增功能] 選項 4: Scash (xmrigCC) 安裝
+# [新增功能 - 已加入自動化參數] 選項 4: Scash (xmrigCC) 安裝
 elif [ "$CHOICE" == "4" ]; then
-    echo "--- 正在執行 Scash (xmrigCC) 安裝流程... ---"
+    echo "--- 正在執行 Scash (xmrigCC) 自動安裝流程... ---"
+    
+    # 同樣套用非互動參數
+    export DEBIAN_FRONTEND=noninteractive
     apt-get update -y
-    apt install -y wget tar openssl libcurl
+    apt install -y wget tar openssl libcurl -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     
     # 使用官方永久下載連結
     SCASH_URL="https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz"
     echo "--- 正在下載 xmrigCC 3.4.9 (Miner Only) ---"
-    wget "$SCASH_URL"
+    wget -O xmrigCC-scash.tar.gz "$SCASH_URL"
     
-    echo "--- 正在解壓縮... ---"
+    echo "--- 正在自動解壓縮... ---"
     mkdir -p xmrigCC-scash
-    tar -xf xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz --strip-components=1
+    tar -xf xmrigCC-scash.tar.gz -C xmrigCC-scash --strip-components=1
+    
+    # 賦予執行權限並清理
+    chmod +x xmrigCC-scash/xmrigMiner
+    rm xmrigCC-scash.tar.gz
     
     echo "========================================="
-    echo "  xmrigCC (Scash) 安裝完成！"
+    echo "  xmrigCC (Scash) 自動安裝完成！"
     echo "========================================="
 
 # [新增功能] 選項 5: Scash 啟動腳本與設定生成
