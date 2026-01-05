@@ -146,14 +146,11 @@ elif [ "$CHOICE" == "4" ]; then
     # 使用官方永久下載連結
     SCASH_URL="https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz"
     echo "--- 正在下載 xmrigCC 3.4.9 (Miner Only) ---"
-    wget -O xmrigCC-scash.tar.gz "$SCASH_URL"
+    wget "$SCASH_URL"
     
     echo "--- 正在解壓縮... ---"
     mkdir -p xmrigCC-scash
-    tar -xf xmrigCC-scash.tar.gz -C xmrigCC-scash --strip-components=1
-    
-    chmod +x xmrigCC-scash/xmrigMiner
-    rm xmrigCC-scash.tar.gz
+    tar -xf xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz --strip-components=1
     
     echo "========================================="
     echo "  xmrigCC (Scash) 安裝完成！"
