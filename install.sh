@@ -116,9 +116,6 @@ elif [ "$CHOICE" == "4" ]; then
     echo "--- 正在解壓 $S_FILE ---"
     tar -xf "$S_FILE"
     
-    # 賦予權限 (miner_only 版只有 xmrigMiner)
-    chmod +x xmrigMiner
-    
     echo "========================================="
     echo "  Scash 安裝完成！"
     echo "========================================="
