@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =================================================================
-# Verus Coin & Scash 自動化設定腳本 (增量開發 - 長連結修正自動化版)
+# Verus Coin & Scash 自動化設定腳本 (增量開發 - 雙幣種自動啟動版)
 # =================================================================
 
 while true
@@ -12,7 +12,7 @@ echo "  Verus & Scash 挖礦自動化設定腳本"
 echo "========================================="
 echo "請選擇您要執行的操作："
 echo ""
-echo "  1) 設定啟動Termux時自動挖礦 (Verus)"
+echo "  1) 設定啟動Termux時自動挖礦 (可選 Verus 或 Scash)"
 echo "  2) 完整安裝 ccminer 挖礦程式 (Verus)"
 echo "  3) 替換/生成 .start.sh 監控挖礦腳本 (Verus)"
 echo "  4) 安裝 xmrigCC 挖礦程式 (Scash)"
@@ -23,16 +23,42 @@ read -p "請輸入你的選擇 (1-6)： " CHOICE
 
 # --- 步驟 2: 根據選擇執行程式碼 ---
 
-# [既有邏輯] 選項 1: Verus 自動啟動
+# [修改後邏輯] 選項 1: 提供啟動選單設定自動挖礦
 if [ "$CHOICE" == "1" ]; then
-    echo "--- 正在設定 Termux 自動啟動... ---"
-    echo "--- 正在自動設定 Termux 啟動腳本..."
-    curl -o ~/.bashrc https://raw.githubusercontent.com/hot4ra/verus-miner-setting/main/.bashrc
-    if [ $? -ne 0 ]; then
-        echo "下載 .bashrc 檔案失敗，請手動設定。"
-    else
-        echo "自動啟動設定成功！"
-    fi
+    echo "--- 設定 Termux 啟動自動挖礦 ---"
+    echo "1) 啟動時自動挖 Verus (ccminer)"
+    echo "2) 啟動時自動挖 Scash (xmrigCC)"
+    echo "3) 關閉自動啟動功能"
+    read -p "請選擇啟動模式： " AUTO_CHOICE
+
+    case $AUTO_CHOICE in
+        1)
+            # 設定自動啟動 Verus
+            cat > ~/.bashrc << EOF
+termux-wake-lock
+cd ~/ccminer
+./start.sh
+EOF
+            echo "已設定：啟動 Termux 時自動挖 Verus。"
+            ;;
+        2)
+            # 設定自動啟動 Scash
+            cat > ~/.bashrc << EOF
+termux-wake-lock
+cd ~
+./start_scash.sh
+EOF
+            echo "已設定：啟動 Termux 時自動挖 Scash。"
+            ;;
+        3)
+            # 清空 .bashrc 關閉自動啟動
+            > ~/.bashrc
+            echo "已關閉所有自動啟動功能。"
+            ;;
+        *)
+            echo "無效選擇，取消設定。"
+            ;;
+    esac
     echo "========================================="
     echo "  設定完成！"
     echo "========================================="
@@ -96,21 +122,18 @@ EOF
     chmod +x start.sh
     ./start.sh
 
-# [修正後] 選項 4: 正確下載並解壓指定檔案
+# [既有邏輯] 選項 4: 下載並解壓指定檔案
 elif [ "$CHOICE" == "4" ]; then
     echo "--- 正在執行 Scash 全自動安裝流程 (不詢問 Y/N)... ---"
     export DEBIAN_FRONTEND=noninteractive
     
-    # 使用全自動化參數解決截圖 image_c41e0d.png 中的詢問問題
     yes '' | apt-get update -y
     yes '' | apt-get install -y wget tar openssl libcurl -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     
-    # 定義檔案名稱
     S_FILE="xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz"
     S_URL="https://release-assets.githubusercontent.com/github-production-release-asset/105634072/2d9c7f00-6738-4729-8d06-5e0e911f36c2?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-01-05T17%3A08%3A55Z&rscd=attachment%3B+filename%3DxmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-01-05T16%3A08%3A00Z&ske=2026-01-05T17%3A08%3A55Z&sks=b&skv=2018-11-09&sig=jrXizM9Qh6Lc84qyYbOb3vcU3CCK%2FU5ZQv2Kr34MRq8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NzYzMDI1NCwibmJmIjoxNzY3NjI5OTU0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Hn7_9b-20ve9fTmguawocfC6U9SNYJWh1DbL586FFKM&response-content-disposition=attachment%3B%20filename%3DxmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz&response-content-type=application%2Foctet-stream"
     
     echo "--- 正在下載 $S_FILE ---"
-    # 使用雙引號包裹網址，並用 -O 指定存檔名稱
     wget -O "$S_FILE" "$S_URL"
     
     echo "--- 正在解壓 $S_FILE ---"
@@ -120,9 +143,9 @@ elif [ "$CHOICE" == "4" ]; then
     echo "  Scash 安裝完成！"
     echo "========================================="
 
-# [修正後] 選項 5: 生成設定並啟動
+# [既有邏輯] 選項 5: 生成設定並啟動
 elif [ "$CHOICE" == "5" ]; then
-    echo "--- 正在生成 Scash 挖礦腳本 (存檔為 config.json)... ---"
+    echo "--- 正在生成 Scash 挖礦設定 (config.json)... ---"
     
     while true; do
         read -p "請輸入你的 Scash 錢包地址： " S_WALLET
@@ -133,7 +156,6 @@ elif [ "$CHOICE" == "5" ]; then
     read -p "請輸入核心數 (建議 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
-    # 使用你提供的指定模板生成 config.json
     cat > config.json << EOF
 {
     "api": { "id": null, "worker-id": null },
@@ -160,12 +182,11 @@ elif [ "$CHOICE" == "5" ]; then
 }
 EOF
 
-    # 啟動腳本
     cat > start_scash.sh << EOF
 #!/bin/bash
 while true; do
   echo "--- \$(date) - 啟動 Scash ---"
-  ./xmrigDaemon -c config.json
+  ./xmrigMiner -c config.json
   sleep 5
 done
 EOF
