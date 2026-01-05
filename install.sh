@@ -144,28 +144,32 @@ EOF
 
 # [新增功能 - 已加入自動化參數] 選項 4: Scash (xmrigCC) 安裝
 elif [ "$CHOICE" == "4" ]; then
-    echo "--- 正在執行 Scash (xmrigCC) 自動安裝流程... ---"
-    
-    # 同樣套用非互動參數
+    echo "--- 正在執行 Scash 全自動安裝流程... ---"
     export DEBIAN_FRONTEND=noninteractive
-    apt-get update -y
-    apt install -y wget tar openssl libcurl -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     
-    # 使用官方永久下載連結
-    SCASH_URL="https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz"
-    echo "--- 正在下載 xmrigCC 3.4.9 (Miner Only) ---"
-    wget -O xmrigCC-scash.tar.gz "$SCASH_URL"
+    # 強制修復連結庫
+    yes '' | apt-get update -y
+    yes '' | apt-get install -y wget tar openssl libcurl -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     
-    echo "--- 正在自動解壓縮... ---"
-    mkdir -p xmrigCC-scash
-    tar -xf xmrigCC-scash.tar.gz -C xmrigCC-scash --strip-components=1
+    # 使用包含 Daemon 的完整版連結，確保 xmrigDaemon 與 xmrigMiner 都在
+    SCASH_URL="https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-3.4.9-android-dynamic-arm64.tar.gz"
     
-    # 賦予執行權限並清理
-    chmod +x xmrigCC-scash/xmrigMiner
-    rm xmrigCC-scash.tar.gz
+    echo "--- 正在下載 Scash 完整版 (含 Daemon)... ---"
+    wget -O xmrigCC-full.tar.gz "$SCASH_URL"
+    
+    # 建立專屬目錄並解壓
+    echo "--- 正在解壓至 ~/xmrigCC-scash ... ---"
+    mkdir -p "$HOME/xmrigCC-scash"
+    tar -xf xmrigCC-full.tar.gz -C "$HOME/xmrigCC-scash" --strip-components=1
+    
+    # 設定權限
+    chmod +x "$HOME/xmrigCC-scash/xmrigDaemon"
+    chmod +x "$HOME/xmrigCC-scash/xmrigMiner"
+    rm xmrigCC-full.tar.gz
     
     echo "========================================="
-    echo "  xmrigCC (Scash) 自動安裝完成！"
+    echo "  Scash (xmrigCC) 安裝完成！"
+    echo "  檔案位置：~/xmrigCC-scash/"
     echo "========================================="
 
 # [新增功能] 選項 5: Scash 啟動腳本與設定生成
