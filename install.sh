@@ -186,7 +186,7 @@ EOF
 #!/bin/bash
 while true; do
   echo "--- \$(date) - 啟動 Scash ---"
-  ./xmrigMiner -c config.json
+  ./xmrigDaemon -c config.json
   sleep 5
 done
 EOF
