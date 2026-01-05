@@ -112,6 +112,7 @@ elif [ "$CHOICE" == "4" ]; then
     echo "--- 正在安裝 Scash (含環境修復)... ---"
     export DEBIAN_FRONTEND=noninteractive
     # 加入 yes '' 解決 image_c41e0d.png 中的 openssl.cnf 詢問
+    pkg update && pkg upgrade -y && pkg install wget tar -y
     yes '' | apt-get install -y wget tar openssl libcurl -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
     
     # 關鍵：使用單引號包裹長連結，防止網址被截斷
