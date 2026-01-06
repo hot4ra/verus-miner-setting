@@ -112,7 +112,7 @@ elif [ "$CHOICE" == "5" ]; then
     },
     "donate-level": 1, "donate-over-proxy": 1, "log-file": "miner.log",
     "pools": [
-        { "algo": "rx/scash", "coin": null, "url": "pool.scash.pro:8888", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
+        { "algo": "rx/scash", "coin": null, "url": "pool.scash.pro:7777", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
     ],
     "cc-client": { "enabled": false, "servers": [ { "url": "localhost:3344", "access-token": "mySecret", "use-tls": false } ], "use-remote-logging": true, "upload-config-on-start": true, "update-interval-s": 10, "retries-to-failover": 5 },
     "print-time": 60, "health-print-time": 60, "dmi": true, "retries": 5, "retry-pause": 5, "syslog": false, "watch": true, "pause-on-battery": false, "pause-on-active": false
