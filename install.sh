@@ -117,9 +117,7 @@ EOF
 
 # 修正後的選項 4 邏輯
 elif [ "$CHOICE" == "4" ]; then
-    wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz
-    tar -xf *
-    chmod +x xmrigMiner
+    wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz && tar -xf *
     echo "Scash 安裝修復完成！"
 
 # [修正後邏輯] 選項 5: Scash 監控腳本 (同步 Verus 的重啟邏輯)
