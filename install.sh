@@ -117,7 +117,7 @@ EOF
 
 # 修正後的選項 4 邏輯
 elif [ "$CHOICE" == "4" ]; then
-    wget https://release-assets.githubusercontent.com/github-production-release-asset/105634072/2d9c7f00-6738-4729-8d06-5e0e911f36c2?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-01-05T17%3A08%3A55Z&rscd=attachment%3B+filename%3DxmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-01-05T16%3A08%3A00Z&ske=2026-01-05T17%3A08%3A55Z&sks=b&skv=2018-11-09&sig=jrXizM9Qh6Lc84qyYbOb3vcU3CCK%2FU5ZQv2Kr34MRq8%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NzYzMDI1NCwibmJmIjoxNzY3NjI5OTU0LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Hn7_9b-20ve9fTmguawocfC6U9SNYJWh1DbL586FFKM&response-content-disposition=attachment%3B%20filename%3DxmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz&response-content-type=application%2Foctet-stream
+    wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz
     tar -xf *
     chmod +x xmrigMiner
     echo "Scash 安裝修復完成！"
