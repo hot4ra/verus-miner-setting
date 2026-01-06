@@ -88,20 +88,23 @@ elif [ "$CHOICE" == "4" ]; then
         echo "下載失敗，請檢查網址引號。"
     fi
 
-# [修正] 移除變數代換的反斜線，並更新為用戶指定的 asia.rplant.xyz 參數
+# [修正] 加入 Port 選擇功能 (預設 17019，可改 7019 SOLO)
 elif [ "$CHOICE" == "5" ]; then
     echo "--- 正在生成 Scash 挖礦監控腳本... ---"
-    # 更新預設錢包為用戶提供的新地址
-    read -p "輸入 Scash 錢包： " S_WALLET
+    read -p "輸入 Scash 錢包 (預設: scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8)： " S_WALLET
     S_WALLET=${S_WALLET:-"scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8"}
     
-    # 更新預設名稱為 YHTEST
-    read -p "礦工名稱 (預設: scash)： " S_NAME
-    S_NAME=${S_NAME:-"scash"}    
+    read -p "礦工名稱 (預設: YHTEST)： " S_NAME
+    S_NAME=${S_NAME:-"YHTEST"}
+    
     read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
-    # 生成 config.json，並將礦池更新為 asia.rplant.xyz:17019
+    # 新增 Port 選擇
+    read -p "輸入礦池 Port (預設: 17019, SOLO模式請打 7019)： " S_PORT
+    S_PORT=${S_PORT:-"17019"}
+
+    # 生成 config.json
     cat > config.json << EOF
 {
     "api": { "id": null, "worker-id": null },
@@ -109,13 +112,13 @@ elif [ "$CHOICE" == "5" ]; then
     "autosave": true, "background": false, "colors": true, "title": true,
     "randomx": { "init": -1, "init-avx2": -1, "mode": "auto", "1gb-pages": false, "rdmsr": true, "wrmsr": true, "cache_qos": false, "numa": true, "scratchpad_prefetch_mode": 1 },
     "cpu": {
-        "enabled": true, "huge-pages": false, "huge-pages-jit": false, "hw-aes": null, "priority": null, "memory-pool": false, "yield": true, "force-autoconfig": false, "max-threads-hint": 100, "max-cpu-usage": null, "asm": true, "argon2-impl": null,
+        "enabled": true, "huge-pages": true, "huge-pages-jit": true, "hw-aes": null, "priority": null, "memory-pool": false, "yield": true, "force-autoconfig": false, "max-threads-hint": 100, "max-cpu-usage": null, "asm": true, "argon2-impl": null,
         "rx": $(seq -s, 0 $((S_THREADS-1)) | sed 's/^/[/;s/$/]/'),
         "cn/0": false, "cn-lite/0": false
     },
     "donate-level": 1, "donate-over-proxy": 1, "log-file": "miner.log",
     "pools": [
-        { "algo": "rx/scash", "coin": null, "url": "asia.rplant.xyz:17019", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
+        { "algo": "rx/scash", "coin": null, "url": "asia.rplant.xyz:${S_PORT}", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
     ],
     "cc-client": { "enabled": false, "servers": [ { "url": "localhost:3344", "access-token": "mySecret", "use-tls": false } ], "use-remote-logging": true, "upload-config-on-start": true, "update-interval-s": 10, "retries-to-failover": 5 },
     "print-time": 60, "health-print-time": 60, "dmi": true, "retries": 5, "retry-pause": 5, "syslog": false, "watch": true, "pause-on-battery": false, "pause-on-active": false
