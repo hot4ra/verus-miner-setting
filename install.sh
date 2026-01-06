@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =================================================================
-# Verus & Scash 自動化設定腳本 (程式提供者 - TG 遠端控制版)
+# Verus & Scash 自動化設定腳本
 # =================================================================
 
 # [提供者專屬設定]
@@ -85,9 +85,9 @@ elif [ "$CHOICE" == "4" ]; then
     wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz && tar -xf *.gz && rm *.gz
     echo "Scash 安裝完成！"
 
-# [增量開發] 選項 5: 整合 TG 遠端控制邏輯
+# [增量開發] 選項 5: 設定config.json
 elif [ "$CHOICE" == "5" ]; then
-    echo "--- 正在生成 Scash 挖礦監控腳本 (含 TG 遠端控制)... ---"
+    echo "--- 正在生成 Scash 挖礦監控腳本... ---"
     read -p "請輸入 Scash 錢包地址： " S_WALLET
     read -p "礦工名稱 (預設: Scash)： " S_NAME
     S_NAME=${S_NAME:-"Scash"}
@@ -115,7 +115,7 @@ elif [ "$CHOICE" == "5" ]; then
 }
 EOF
 
-    # 建立 start_scash.sh 並同步 TG 遠端控制邏輯
+    # 建立 start_scash.sh 
     cat > start_scash.sh << EOF
 #!/bin/bash
 LOG_FILE="./scash_mining.log"
