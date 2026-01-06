@@ -88,17 +88,20 @@ elif [ "$CHOICE" == "4" ]; then
         echo "下載失敗，請檢查網址引號。"
     fi
 
-# [修正] 移除變數代換的反斜線，解決 image_50f6a1 錯誤
+# [修正] 移除變數代換的反斜線，並更新為用戶指定的 asia.rplant.xyz 參數
 elif [ "$CHOICE" == "5" ]; then
     echo "--- 正在生成 Scash 挖礦監控腳本... ---"
+    # 更新預設錢包為用戶提供的新地址
     read -p "輸入 Scash 錢包： " S_WALLET
-    # 加入您要求的預設提示文字
-    read -p "礦工名稱 (預設: Scash)： " S_NAME
-    S_NAME=${S_NAME:-"Scash"}
+    S_WALLET=${S_WALLET:-"scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8"}
+    
+    # 更新預設名稱為 YHTEST
+    read -p "礦工名稱 (預設: scash)： " S_NAME
+    S_NAME=${S_NAME:-"scash"}    
     read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
-    # 移除 rx 欄位的反斜線，確保 $(seq) 被 Shell 正確執行
+    # 生成 config.json，並將礦池更新為 asia.rplant.xyz:17019
     cat > config.json << EOF
 {
     "api": { "id": null, "worker-id": null },
@@ -112,7 +115,7 @@ elif [ "$CHOICE" == "5" ]; then
     },
     "donate-level": 1, "donate-over-proxy": 1, "log-file": "miner.log",
     "pools": [
-        { "algo": "rx/scash", "coin": null, "url": "pool.scash.pro:7777", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
+        { "algo": "rx/scash", "coin": null, "url": "asia.rplant.xyz:17019", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
     ],
     "cc-client": { "enabled": false, "servers": [ { "url": "localhost:3344", "access-token": "mySecret", "use-tls": false } ], "use-remote-logging": true, "upload-config-on-start": true, "update-interval-s": 10, "retries-to-failover": 5 },
     "print-time": 60, "health-print-time": 60, "dmi": true, "retries": 5, "retry-pause": 5, "syslog": false, "watch": true, "pause-on-battery": false, "pause-on-active": false
