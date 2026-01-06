@@ -117,16 +117,16 @@ EOF
 
 # 修正後的選項 4 邏輯
 elif [ "$CHOICE" == "4" ]; then
-    wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz && tar -xf *
-    echo "Scash 安裝修復完成！"
+    wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz && tar -xf *.gz && rm *.gz
+    echo "Scash 安裝完成！"
 
 # [修正後邏輯] 選項 5: Scash 監控腳本 (同步 Verus 的重啟邏輯)
 elif [ "$CHOICE" == "5" ]; then
     echo "--- 正在生成 Scash 挖礦監控腳本... ---"
     read -p "請輸入 Scash 錢包地址： " S_WALLET
-    read -p "礦工名稱 (預設: YH)： " S_NAME
-    S_NAME=${S_NAME:-"YH"}
-    read -p "核心數 (建議 6)： " S_THREADS
+    read -p "礦工名稱 (預設: Scash)： " S_NAME
+    S_NAME=${S_NAME:-"Scash"}
+    read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
     # 生成 config.json (100% 原始 JSON 結構)
