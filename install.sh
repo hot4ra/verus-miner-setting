@@ -90,10 +90,12 @@ elif [ "$CHOICE" == "4" ]; then
 
 # [修正] 移除變數代換的反斜線，解決 image_50f6a1 錯誤
 elif [ "$CHOICE" == "5" ]; then
+    echo "--- 正在生成 Scash 挖礦監控腳本... ---"
     read -p "輸入 Scash 錢包： " S_WALLET
-    read -p "礦工名稱： " S_NAME
+    # 加入您要求的預設提示文字
+    read -p "礦工名稱 (預設: Scash)： " S_NAME
     S_NAME=${S_NAME:-"Scash"}
-    read -p "核心數： " S_THREADS
+    read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
     # 移除 rx 欄位的反斜線，確保 $(seq) 被 Shell 正確執行
