@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =================================================================
-# Verus & Scash 自動化設定腳本 (100台規模 & Proxy 聚合版)
+# Verus & Scash 自動化設定腳本 (100台規模 & 直連礦池版)
 # =================================================================
 
 while true
@@ -87,29 +87,24 @@ elif [ "$CHOICE" == "4" ]; then
         echo "下載失敗，請檢查網址引號。"
     fi
 
-# [選項 5] 針對 100 台規模優化，支援內網 Proxy
+# [選項 5] 恢復直連礦池模式 (不經過 Windows Proxy)
 elif [ "$CHOICE" == "5" ]; then
-    echo "--- 正在生成 Scash 挖礦監控腳本 ---"
+    echo "--- 正在生成 Scash 挖礦監控腳本 (直連礦池版) ---"
     read -p "輸入 Scash 錢包： " S_WALLET
     S_WALLET=${S_WALLET:-"scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8"}
     
     read -p "礦工名稱 (預設: Scash)： " S_NAME
     S_NAME=${S_NAME:-"Scash"}
-
-    # 自動生成編號，讓每支手機能在 Proxy 被區分
-    RAND_ID=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 4 | head -n 1)
-    FINAL_NAME="${S_NAME}_${RAND_ID}"
-    
     read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
-    read -p "輸入 Windows Proxy IP (例如 192.168.8.60)： " S_URL
-    S_URL=${S_URL:-"192.168.8.60"}
+    read -p "輸入 Scash 礦池位址 (預設: asia.rplant.xyz)： " S_URL
+    S_URL=${S_URL:-"asia.rplant.xyz"}
 
-    read -p "輸入 Port (Proxy 請填 3333)： " S_PORT
-    S_PORT=${S_PORT:-"3333"}
+    read -p "輸入 礦池 Port (預設: 17019)： " S_PORT
+    S_PORT=${S_PORT:-"17019"}
 
-    # 生成 config.json
+    # 生成 config.json (還原直連礦池配置)
     cat > config.json << EOF
 {
     "api": { "id": null, "worker-id": null },
@@ -130,7 +125,7 @@ elif [ "$CHOICE" == "5" ]; then
             "pass": "x", 
             "keepalive": true, 
             "enabled": true,
-            "tls": false
+            "tls": true
         }
     ],
     "print-time": 60, "health-print-time": 60, "retries": 5, "retry-pause": 5
@@ -141,7 +136,7 @@ EOF
 #!/bin/bash
 while true; do
   echo "--- \$(date) - 啟動 xmrigDaemon ---"
-  echo "連線目標: ${S_URL}:${S_PORT}"
+  echo "直連礦池: ${S_URL}:${S_PORT}"
   echo "本機識別: ${FINAL_NAME}"
   ./xmrigDaemon -c config.json 2>&1
   sleep 5
