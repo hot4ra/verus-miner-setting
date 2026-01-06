@@ -91,11 +91,11 @@ elif [ "$CHOICE" == "4" ]; then
 # [修正] 加入 Port 選擇功能 (預設 17019，可改 7019 SOLO)
 elif [ "$CHOICE" == "5" ]; then
     echo "--- 正在生成 Scash 挖礦監控腳本... ---"
-    read -p "輸入 Scash 錢包 (預設: scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8)： " S_WALLET
+    read -p "輸入 Scash 錢包： " S_WALLET
     S_WALLET=${S_WALLET:-"scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8"}
     
-    read -p "礦工名稱 (預設: YHTEST)： " S_NAME
-    S_NAME=${S_NAME:-"YHTEST"}
+    read -p "礦工名稱 (預設: Scash)： " S_NAME
+    S_NAME=${S_NAME:-"Scash"}
     
     read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
