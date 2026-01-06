@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =================================================================
-# Verus & Scash 自動化設定腳本 (100台規模 & 直連礦池版)
+# Verus & Scash 自動化設定腳本 (全自動修復與 JSON 優化版)
 # =================================================================
 
 while true
@@ -74,6 +74,7 @@ EOF
     chmod +x start.sh
     ./start.sh
 
+# [修正] 使用單引號包裹連結，解決 image_c56fe6 錯誤
 elif [ "$CHOICE" == "4" ]; then
     echo "--- 正在下載 Scash 執行檔... ---"
     S_FILE="xmrigCC-miner_only-3.4.9-android-dynamic-arm64.tar.gz"
@@ -87,24 +88,23 @@ elif [ "$CHOICE" == "4" ]; then
         echo "下載失敗，請檢查網址引號。"
     fi
 
-# [選項 5] 恢復直連礦池模式 (不經過 Windows Proxy)
+# [修正] 加入 Port 選擇功能 (預設 17019，可改 7019 SOLO)
 elif [ "$CHOICE" == "5" ]; then
-    echo "--- 正在生成 Scash 挖礦監控腳本 (直連礦池版) ---"
-    read -p "輸入 Scash 錢包： " S_WALLET
+    echo "--- 正在生成 Scash 挖礦監控腳本... ---"
+    read -p "輸入 Scash 錢包 (預設: scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8)： " S_WALLET
     S_WALLET=${S_WALLET:-"scash1q2esdj4cnqc8dfpkee44esv3jnqf39s4jr7v4v8"}
     
-    read -p "礦工名稱 (預設: Scash)： " S_NAME
-    S_NAME=${S_NAME:-"Scash"}
+    read -p "礦工名稱 (預設: YHTEST)： " S_NAME
+    S_NAME=${S_NAME:-"YHTEST"}
+    
     read -p "核心數 (預設: 6)： " S_THREADS
     S_THREADS=${S_THREADS:-"6"}
 
-    read -p "輸入 Scash 礦池位址 (預設: asia.rplant.xyz)： " S_URL
-    S_URL=${S_URL:-"asia.rplant.xyz"}
-
-    read -p "輸入 礦池 Port (預設: 17019)： " S_PORT
+    # 新增 Port 選擇
+    read -p "輸入礦池 Port (預設: 17019, SOLO模式請打 7019)： " S_PORT
     S_PORT=${S_PORT:-"17019"}
 
-    # 生成 config.json (還原直連礦池配置)
+    # 生成 config.json
     cat > config.json << EOF
 {
     "api": { "id": null, "worker-id": null },
@@ -118,17 +118,10 @@ elif [ "$CHOICE" == "5" ]; then
     },
     "donate-level": 1, "donate-over-proxy": 1, "log-file": "miner.log",
     "pools": [
-        { 
-            "algo": "rx/scash", 
-            "url": "${S_URL}:${S_PORT}", 
-            "user": "${S_WALLET}.${FINAL_NAME}", 
-            "pass": "x", 
-            "keepalive": true, 
-            "enabled": true,
-            "tls": true
-        }
+        { "algo": "rx/scash", "coin": null, "url": "asia.rplant.xyz:${S_PORT}", "user": "${S_WALLET}.${S_NAME}", "pass": "x", "rig-id": null, "nicehash": false, "keepalive": true, "enabled": true, "tls": false, "daemon": false, "submit-to-origin": false }
     ],
-    "print-time": 60, "health-print-time": 60, "retries": 5, "retry-pause": 5
+    "cc-client": { "enabled": false, "servers": [ { "url": "localhost:3344", "access-token": "mySecret", "use-tls": false } ], "use-remote-logging": true, "upload-config-on-start": true, "update-interval-s": 10, "retries-to-failover": 5 },
+    "print-time": 60, "health-print-time": 60, "dmi": true, "retries": 5, "retry-pause": 5, "syslog": false, "watch": true, "pause-on-battery": false, "pause-on-active": false
 }
 EOF
 
@@ -136,8 +129,6 @@ EOF
 #!/bin/bash
 while true; do
   echo "--- \$(date) - 啟動 xmrigDaemon ---"
-  echo "直連礦池: ${S_URL}:${S_PORT}"
-  echo "本機識別: ${FINAL_NAME}"
   ./xmrigDaemon -c config.json 2>&1
   sleep 5
 done
